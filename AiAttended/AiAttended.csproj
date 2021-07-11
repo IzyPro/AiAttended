@@ -4,4 +4,29 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\img\">
+    </Folder>
+    <Folder Include="Views\Manager\">
+    </Folder>
+    <Folder Include="Services\">
+    </Folder>
+    <Folder Include="Data\">
+      <DependentUpon>Data</DependentUpon>
+    </Folder>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.CognitiveServices.Vision.Face" Version="2.7.0-preview.1" />
+    <PackageReference Include="RestSharp" Version="106.11.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.7">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.7">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.7" />
+  </ItemGroup>
 </Project>

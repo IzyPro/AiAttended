@@ -1,3 +1,49 @@
-﻿@page
+﻿@model ImageModel;
 @{
+    ViewData["Title"] = "Manager";
+}
+
+<link href="~/css/manager.css" rel="stylesheet" type="text/css">
+
+<div class="text-center p-5 add">
+    <h3 class="pb-3">Add Person</h3>
+    <p>Add 5 or more photos of a person to register them as a member of the class.</p>
+    <p class="text-danger">@ViewBag.AddError</p>
+    <div class="form-label-group m-auto">
+        <form asp-action="AddPerson" asp-controller="Manager" method="post" id="addPerson" enctype="multipart/form-data">
+            <input class="form-control col-md-4 m-auto mb-3" asp-for="Name" type="text" name="Name" placeholder="Name" required />
+            <span asp-validation-for="Name" class="text-danger"></span>
+            <input class="mt-3 mb-3" accept="image/*" multiple name="Images" asp-for="Images" placeholder="Add Photos" required />
+            <span asp-validation-for="Images" class="text-danger"></span>
+            <button class="mt-3 btn-sm btn-block" type="submit" id="Btn" onclick="showLoader()">Add</button>
+        </form>
+    </div>
+</div>
+
+<div class="train text-center">
+    <h3 class="pb-3">Train/Retrain Model</h3>
+    <p>Train the model with the newly added faces.</p>
+    <button class="btn btn-outline-light btn-sm">Train</button>
+</div>
+
+<div class="text-center p-5 add">
+    <h3 class="pb-3">Identify Faces</h3>
+    <p>Identify members of the group that are present.</p>
+    <div class="form-label-group m-auto">
+        <input class="mt-3 mb-3" type="image" multiple name="Images" placeholder="Add Photos" required />
+        <button class="mt-3 btn-sm btn-block" type="button">Identify</button>
+    </div>
+</div>
+
+
+@section Scripts{
+
+    <script>
+        function showLoader() {
+            var form = document.getElementById("addPerson");
+            if (form.checkValidity()) {
+                $('#Btn').html('Please wait... <i class="fa fa-refresh fa-spin">');
+            }
+        }
+    </script>
 }

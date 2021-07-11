@@ -2,9 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AiAttended.Data;
+using AiAttended.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -24,6 +27,13 @@ namespace AiAttended
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+
+
+            //ENTITY FRAMEWORK
+            services.AddDbContext<AiAttendedContext>(option => option.UseNpgsql
+            (Configuration.GetConnectionString("AiAttendedConnection")));
+
+            services.AddScoped<IAzureService, AzureService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -18,3 +18,16 @@
 .getstarted{
     color: var(--secondaryColor);
 }
+
+
+button {
+    background-color: white;
+    border: 1px solid;
+    border-color: var(--secondaryColor);
+    color: var(--secondaryColor);
+}
+button:hover {
+    background-color: var(--secondaryColor);
+    border: none;
+    color: white;
+}

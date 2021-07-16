@@ -34,6 +34,7 @@ namespace AiAttended
             (Configuration.GetConnectionString("AiAttendedConnection")));
 
             services.AddScoped<IAzureService, AzureService>();
+            services.AddScoped<IMeetingService, MeetingService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

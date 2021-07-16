@@ -10,6 +10,6 @@ namespace AiAttended.Services
     {
         Task<ResponseManager> AddPersonAsync(AddPersonViewModel model);
         Task<ResponseManager> TrainGroupAsync();
-        Task<Tuple<ResponseManager, List<Tuple<Person, double>>>> IdentifyFacesAsync(AddPersonViewModel model);
+        Task<Tuple<ResponseManager, List<User>>> IdentifyFacesAsync(AddPersonViewModel model);
     }
 }

@@ -11,7 +11,13 @@ namespace AiAttended.Data
         {
         }
 
-        public DbSet<Person> People { get; set; }
-        public DbSet<Attendance> Attendances { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Meeting> Meetings { get; set; }
+
+        //protected override void OnModelCreating(ModelBuilder modelBuilder)
+        //{
+        //    modelBuilder.Entity<Person>().Ignore(x => x.PersistedFaceIds);
+        //    base.OnModelCreating(modelBuilder);
+        //}
     }
 }

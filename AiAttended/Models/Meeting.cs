@@ -4,9 +4,11 @@ using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 
 namespace AiAttended.Models
 {
-    public class Attendance
+    public class Meeting
     {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
         public DateTime DateTime { get; set; }
-        public List<Tuple<Person,double>> Attendees { get;set; }
+        public List<User> Attendees { get;set; }
     }
 }

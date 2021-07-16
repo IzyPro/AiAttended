@@ -1,29 +1,93 @@
-﻿@{
+﻿@model AddPersonViewModel
+@{
     ViewData["Title"] = "Home";
 }
 <link href="~/css/Index.css" rel="stylesheet" type="text/css">
 
-<div class="text-center jumbo">
-    <h3 class="">Welcome to AiAttended</h3>
-    <p>Your AI Attendance Manager.</p>
-    <p>Powered by Azure AI and ASP.NET Core.</p>
-</div>
-
-<div class="container p-5 getstarted">
-    <h3 class="lead text-center pb-5">Get Started</h3>
-    <div class="row">
-        <div class="col-md-4 text-left">
-            <h4>Add Person</h4>
-            <p>Add a person with 5+ photos of different angles as a member of a class.</p>
+<div class="container jumbo">
+    <div class="text-center row">
+        <div class="col-md-6 m-auto">
+            <h3 class="">Welcome to AiAttended</h3>
+            <p>Your AI Attendance Manager.</p>
+            <p>Powered by Azure AI and ASP.NET Core.</p>
         </div>
-        <div class="col-md-4 text-center">
-            <h4>Train the Group</h4>
-            <p>Retrain the model to recognize the new set of faces.</p>
-        </div>
-        <div class="col-md-4 text-right">
-            <h4>Identify Faces</h4>
-            <p>Upload a group image of all attendees to get the list of everyone in attendance.</p>
+        <div class="col-md-6">
+            <img src="~/assets/jumbo.jpg" width="100%" alt="AI Image" />
         </div>
     </div>
 </div>
- 
+<hr />
+<div class="container p-5 getstarted">
+    <h3 class="lead text-center pb-5">Get Started</h3>
+
+    <div class="row mb-5">
+        <div class="col-md-4 text-left mb-3 border-bottom pb-5">
+            <p class="text-danger">@TempData["AddPersonError"]</p>
+            <p class="text-success">@TempData["AddPersonSuccess"]</p>
+            <h4>Add Person</h4>
+            <p>Add a person with 5+ photos of different angles as a member of a class.</p>
+            <div class="form-label-group">
+                <form asp-action="AddPerson" method="post" id="addPerson" enctype="multipart/form-data">
+                    <input class="form-control col-md-10 mb-1" asp-for="Name" type="text" name="Name" placeholder="Name" required />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                    <input class="mt-3 mb-3" accept="image/*" name="Images" asp-for="Images" placeholder="Add Photos" required multiple />
+                    <span asp-validation-for="Images" class="text-danger"></span>
+                    <button class="mt-3 btn-sm btn-block" type="submit" id="Btn" onclick="showLoader()">Add</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-4 text-center border-right border-left mb-3  border-bottom pb-5">
+            <p class="text-danger">@TempData["TrainError"]</p>
+            <p class="text-success">@TempData["TrainSuccess"]</p>
+            <h4>Train the Model</h4>
+            <p>Retrain the model to recognize the new set of faces.</p>
+            <form asp-action="Train" id="trainPerson">
+                <button class="btn-sm" id="trainBtn" onclick="showTrainLoader()">Train</button>
+            </form>
+        </div>
+
+        <div class="col-md-4 text-right mb-3  border-bottom pb-5">
+            <p class="text-danger">@TempData["IdentifyError"]</p>
+            <p class="text-success">@TempData["IdentifySuccess"]</p>
+            <h4>Identify Faces</h4>
+            <p>Upload a group image(s) of all attendees to get the list of everyone in attendance.</p>
+            <div class="form-label-group text-right">
+                <form asp-action="Identify" method="post" id="identifyPerson" enctype="multipart/form-data">
+                    <input class="form-control col-md-10 mb-1" asp-for="Name" type="text" name="Name" placeholder="Meeting Name" required />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                    <input class="mt-3 mb-3" accept="image/*" asp-for="Images" name="Images" placeholder="Add Photos" required multiple />
+                    <span asp-validation-for="Images" class="text-danger"></span>
+                    <button class="mt-3 btn-sm btn-block" type="submit" id="identifyBtn" onclick="showIdentifyLoader()">Identify</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+
+    <script>
+        function showLoader() {
+            var form = document.getElementById("addPerson");
+            if (form.checkValidity()) {
+                $('#Btn').html('Please wait... <i class="fa fa-refresh fa-spin">');
+            }
+        }
+
+        function showTrainLoader() {
+            var form = document.getElementById("trainPerson");
+            if (form.checkValidity()) {
+                $('#trainBtn').html('Please wait... <i class="fa fa-refresh fa-spin">');
+            }
+        }
+
+        function showIdentifyLoader() {
+            var form = document.getElementById("identifyPerson");
+            if (form.checkValidity()) {
+                $('#identifyBtn').html('Please wait... <i class="fa fa-refresh fa-spin">');
+            }
+        }
+    </script>
+}

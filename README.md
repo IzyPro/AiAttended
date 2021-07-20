@@ -10,7 +10,7 @@
 4. Meeting History
 5. Model Training
  
-Check out the project [here](https://aiattended.herokuapp.com)
+Check out the project live [here](https://aiattended.herokuapp.com)
 
 ## How it works
 

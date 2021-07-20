@@ -12,7 +12,5 @@ namespace AiAttended.Models
         public List<Guid> PersistedFaceIDs { get; set; }
         public bool? wasPresent { get; set; }
         public DateTime Created { get; set; }
-
-        public virtual ICollection<Meeting> Meetings { get; set; }
     }
 }

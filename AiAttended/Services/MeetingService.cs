@@ -38,7 +38,7 @@ namespace AiAttended.Services
                     response = new ResponseManager
                     {
                         isSuccess = false,
-                        Message = "No meeting recorded on this day",
+                        Message = $"No meeting with name {name} recorded on this day",
                     };
                     return new Tuple<ResponseManager, MeetingViewModel>(response, null);
                 }

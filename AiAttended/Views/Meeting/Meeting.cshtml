@@ -10,7 +10,7 @@
     <p class="text-danger">@ViewBag.Error</p>
     <form asp-action="Meeting" asp-controller="Meeting" asp-route-datetime="datetime" asp-route-name="name" method="post" id="meeting">
         <div class="row mr-1 ml-1">
-            <input type="date" name="datetime" id="datetime" class="form-control col-md-4 m-1" placeholder="Date (dd/mm/yyyy)" required/>
+            <input type="date" name="datetime" id="datetime" class="form-control col-md-4 m-1" placeholder="Date (yyyy/mm/dd)" required/>
             <input type="text" name="name" id="name" class="form-control col-md-4 m-1" placeholder="Meeting Name" required/>
             <button id="Btn" type="submit" class="btn-sm m-1" onclick="showLoader()">Submit</button>
         </div>
@@ -21,10 +21,10 @@
         <table id="meetingTable" class="table table-striped table-hover table-sm table-bordered">
             <thead class="">
                 <tr>
-                    <th>Id</th>
-                    <th>Date</th>
-                    <th>Person</th>
-                    <th>Attended</th>
+                    <th class="col-md-2">Id</th>
+                    <th class="col-md-2">Date</th>
+                    <th class="col-md-5">Person</th>
+                    <th class="col-md-2">Attended</th>
                 </tr>
             </thead>
             <tbody>
@@ -37,9 +37,9 @@
                             {
                                 <tr>
                                     <td class="col-md-2">@string.Join("", entry.Id.ToString().Take(10))...</td>
-                                    <td>@meeting.DateTime.Date.ToShortDateString()</td>
-                                    <td>@entry.Name</td>
-                                    <td>@Convert.ToInt32(entry.wasPresent)</td>
+                                    <td class="col-md-3">@meeting.DateTime.Date.ToShortDateString()</td>
+                                    <td class="col-md-5">@entry.Name</td>
+                                    <td class="col-md-2">@Convert.ToInt32(entry.wasPresent)</td>
                                 </tr>
                             }
                         }

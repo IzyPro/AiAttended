@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using AiAttended.Data;
 using AiAttended.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,7 +29,7 @@ namespace AiAttended.Controllers
                 ViewBag.Error = response.Message;
                 return View();
             }
-            ViewBag.Meeting = result;
+            ViewBag.MeetingVM = result;
             return View();
         }
     }

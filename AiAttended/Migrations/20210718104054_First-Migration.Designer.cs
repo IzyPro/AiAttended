@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AiAttended.Migrations
 {
     [DbContext(typeof(AiAttendedContext))]
-    [Migration("20210716093016_Third-Migration")]
-    partial class ThirdMigration
+    [Migration("20210718104054_First-Migration")]
+    partial class FirstMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -39,6 +39,21 @@ namespace AiAttended.Migrations
                     b.ToTable("Meetings");
                 });
 
+            modelBuilder.Entity("AiAttended.Models.MeetingUser", b =>
+                {
+                    b.Property<Guid>("MeetingId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("MeetingId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("MeetingUser");
+                });
+
             modelBuilder.Entity("AiAttended.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -47,9 +62,6 @@ namespace AiAttended.Migrations
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp without time zone");
-
-                    b.Property<Guid?>("MeetingId")
-                        .HasColumnType("uuid");
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
@@ -68,21 +80,36 @@ namespace AiAttended.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MeetingId");
-
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("AiAttended.Models.User", b =>
+            modelBuilder.Entity("AiAttended.Models.MeetingUser", b =>
                 {
-                    b.HasOne("AiAttended.Models.Meeting", null)
-                        .WithMany("Attendees")
-                        .HasForeignKey("MeetingId");
+                    b.HasOne("AiAttended.Models.Meeting", "Meeting")
+                        .WithMany("MeetingUsers")
+                        .HasForeignKey("MeetingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AiAttended.Models.User", "User")
+                        .WithMany("MeetingUsers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Meeting");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("AiAttended.Models.Meeting", b =>
                 {
-                    b.Navigation("Attendees");
+                    b.Navigation("MeetingUsers");
+                });
+
+            modelBuilder.Entity("AiAttended.Models.User", b =>
+                {
+                    b.Navigation("MeetingUsers");
                 });
 #pragma warning restore 612, 618
         }

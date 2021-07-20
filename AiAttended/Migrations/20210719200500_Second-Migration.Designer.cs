@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AiAttended.Migrations
 {
     [DbContext(typeof(AiAttendedContext))]
-    [Migration("20210716074849_Second-Migration")]
+    [Migration("20210719200500_Second-Migration")]
     partial class SecondMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -30,6 +30,12 @@ namespace AiAttended.Migrations
 
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -73,13 +79,13 @@ namespace AiAttended.Migrations
             modelBuilder.Entity("AiAttended.Models.User", b =>
                 {
                     b.HasOne("AiAttended.Models.Meeting", null)
-                        .WithMany("Attendees")
+                        .WithMany("Users")
                         .HasForeignKey("MeetingId");
                 });
 
             modelBuilder.Entity("AiAttended.Models.Meeting", b =>
                 {
-                    b.Navigation("Attendees");
+                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

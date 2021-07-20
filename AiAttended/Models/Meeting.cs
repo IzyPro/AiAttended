@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 
 namespace AiAttended.Models
 {
@@ -9,6 +8,7 @@ namespace AiAttended.Models
         public Guid Id { get; set; }
         public string Name { get; set; }
         public DateTime DateTime { get; set; }
-        public List<User> Attendees { get;set; }
+
+        public virtual ICollection<User> Users { get;set; }
     }
 }

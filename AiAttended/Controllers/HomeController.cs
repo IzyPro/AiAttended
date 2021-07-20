@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using AiAttended.Models;
 using AiAttended.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace AiAttended.Controllers
 {
@@ -30,11 +28,9 @@ namespace AiAttended.Controllers
         [HttpPost]
         public async Task<IActionResult> AddPerson([FromForm] AddPersonViewModel model)
         {
-
-            //TempData["AddPersonError"] = "";
-            //TempData["AddPersonSuccess"] = "";
             if (!ModelState.IsValid)
             {
+                _logger.LogError("Invalid input format");
                 TempData["AddPersonError"] = "Invalid input format";
                 return RedirectToAction("Index", "Home");
             }
@@ -55,8 +51,6 @@ namespace AiAttended.Controllers
         [HttpPost]
         public async Task<IActionResult> Train()
         {
-            //TempData["TrainError"] = "";
-            //TempData["TrainSuccess"] = "";
             var result = await _azureService.TrainGroupAsync();
             if (result.isSuccess)
             {
@@ -73,8 +67,12 @@ namespace AiAttended.Controllers
         [HttpPost]
         public async Task<IActionResult> Identify([FromForm] AddPersonViewModel model)
         {
-            //TempData["IdentifyError"] = "";
-            //TempData["IdentifySuccess"] = "";
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError("Invalid input format");
+                TempData["IdentifyError"] = "Invalid input format";
+                return RedirectToAction("Index", "Home");
+            }
             var (result, data) = await _azureService.IdentifyFacesAsync(model);
             if (result.isSuccess)
             {

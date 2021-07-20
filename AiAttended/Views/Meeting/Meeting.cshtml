@@ -1,12 +1,13 @@
-﻿@page
-@{
-    Meeting meeting = ViewBag.Meeting;
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Meetings";
+    MeetingViewModel meeting = ViewBag.MeetingVM;
 }
 
 <link href="~/css/Meeting.css" rel="stylesheet" type="text/css">
 
 <div class="container mt-5 text-center">
-    <p class="text-warning">@ViewBag.Error</p>
+    <p class="text-danger">@ViewBag.Error</p>
     <form asp-action="Meeting" asp-controller="Meeting" asp-route-datetime="datetime" asp-route-name="name" method="post" id="meeting">
         <div class="row mr-1 ml-1">
             <input type="date" name="datetime" id="datetime" class="form-control col-md-4 m-1" placeholder="Date (dd/mm/yyyy)" required/>
@@ -30,15 +31,15 @@
                 @{
                     if (meeting != null)
                     {
-                        if (meeting.Attendees.Count > 0)
+                        if (meeting.Users.Count > 0)
                         {
-                            foreach (var entry in meeting.Attendees)
+                            foreach (var entry in meeting.Users)
                             {
                                 <tr>
                                     <td class="col-md-2">@string.Join("", entry.Id.ToString().Take(10))...</td>
                                     <td>@meeting.DateTime.Date.ToShortDateString()</td>
                                     <td>@entry.Name</td>
-                                    <td>@entry.wasPresent</td>
+                                    <td>@Convert.ToInt32(entry.wasPresent)</td>
                                 </tr>
                             }
                         }
@@ -49,18 +50,15 @@
         @{
             if (meeting != null)
             {
-                if (meeting.Attendees.Count > 0)
+                if (meeting.Users.Count > 0)
                 {
                     <button class="text-right mt-3 btn-sm" type="button" onclick="DownloadCSV()">Download CSV</button>
                 }
             }
         }
     </div>
+</div>
 
-
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
-<link href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />
 
 @section Scripts{
 

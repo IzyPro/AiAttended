@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.CognitiveServices.Vision.Face;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using Microsoft.Extensions.Configuration;
-using RestSharp;
 
 namespace AiAttended.Services
 {

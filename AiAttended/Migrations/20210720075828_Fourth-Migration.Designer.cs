@@ -4,15 +4,17 @@ using System.Collections.Generic;
 using AiAttended.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace AiAttended.Migrations
 {
     [DbContext(typeof(AiAttendedContext))]
-    partial class AiAttendedContextModelSnapshot : ModelSnapshot
+    [Migration("20210720075828_Fourth-Migration")]
+    partial class FourthMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AiAttended.Migrations
 {
     [DbContext(typeof(AiAttendedContext))]
-    [Migration("20210715205607_Initial-Migration")]
-    partial class InitialMigration
+    [Migration("20210720065911_Third-Migration")]
+    partial class ThirdMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -31,9 +31,29 @@ namespace AiAttended.Migrations
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.ToTable("Meetings");
+                });
+
+            modelBuilder.Entity("AiAttended.Models.MeetingDetails", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("MeetingId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MeetingDetails");
                 });
 
             modelBuilder.Entity("AiAttended.Models.User", b =>
@@ -45,9 +65,6 @@ namespace AiAttended.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<Guid?>("MeetingId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
@@ -57,26 +74,45 @@ namespace AiAttended.Migrations
                     b.Property<string>("UserData")
                         .HasColumnType("text");
 
+                    b.Property<string>("UserGroupId")
+                        .HasColumnType("text");
+
                     b.Property<bool?>("wasPresent")
                         .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MeetingId");
-
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("AiAttended.Models.User", b =>
+            modelBuilder.Entity("MeetingUser", b =>
                 {
-                    b.HasOne("AiAttended.Models.Meeting", null)
-                        .WithMany("Attendees")
-                        .HasForeignKey("MeetingId");
+                    b.Property<Guid>("MeetingsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UsersId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("MeetingsId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("MeetingUser");
                 });
 
-            modelBuilder.Entity("AiAttended.Models.Meeting", b =>
+            modelBuilder.Entity("MeetingUser", b =>
                 {
-                    b.Navigation("Attendees");
+                    b.HasOne("AiAttended.Models.Meeting", null)
+                        .WithMany()
+                        .HasForeignKey("MeetingsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AiAttended.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AiAttended.Models;
-using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 
 namespace AiAttended.Services
 {

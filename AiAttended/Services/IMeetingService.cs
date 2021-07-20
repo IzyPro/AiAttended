@@ -6,6 +6,6 @@ namespace AiAttended.Services
 {
     public interface IMeetingService
     {
-        Task<Tuple<ResponseManager, Meeting>> GetAttendees(DateTime dateTime, string name);
+        Task<Tuple<ResponseManager, MeetingViewModel>> GetAttendees(DateTime dateTime, string name);
     }
 }

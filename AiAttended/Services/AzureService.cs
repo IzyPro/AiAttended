@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using AiAttended.Data;
 using AiAttended.Models;
@@ -189,6 +188,7 @@ namespace AiAttended.Services
                 var personGroupId = _configuration["AzureDetails:PersonGroupID"];
                 var recognitionModel = _configuration["AzureDetails:RecognitionModel"];
                 var identifiedPersons = new List<User>();
+                var meetingId = Guid.NewGuid();
 
                 List<Guid> sourceFaceIds = new List<Guid>();
 
@@ -233,6 +233,15 @@ namespace AiAttended.Services
                     return new Tuple<ResponseManager, List<User>>(response, null);
                 }
 
+                var meeting = new Meeting
+                {
+                    Id = meetingId,
+                    Name = model.Name,
+                    DateTime = DateTime.Now,
+                };
+
+                _context.Meetings.Add(meeting);
+
                 foreach (var identifyResult in identifyResults)
                 {
                     if (identifyResult.Candidates.Count > 0)
@@ -244,19 +253,18 @@ namespace AiAttended.Services
                         {
                             var user = _context.Users.Where(x => x.Name == person.Name).FirstOrDefault();
                             identifiedPersons.Add(user);
+
+                            var meetingDetails = new MeetingDetails
+                            {
+                                Id = Guid.NewGuid(),
+                                MeetingId = meetingId,
+                                UserId = user.Id,
+                            };
+                            _context.MeetingDetails.Add(meetingDetails);
                         }
                     }
                 }
 
-                var meeting = new Meeting
-                {
-                    Id = Guid.NewGuid(),
-                    Name = model.Name,
-                    DateTime = DateTime.Now,
-                    Attendees = identifiedPersons,
-                };
-
-                _context.Meetings.Add(meeting);
                 var result = await _context.SaveChangesAsync();
 
                 if (result > 0)
@@ -327,7 +335,7 @@ namespace AiAttended.Services
                 return allDetectedFaces;
             }
 
-            catch(Exception ex)
+            catch(Exception)
             {
                 return null;
             }

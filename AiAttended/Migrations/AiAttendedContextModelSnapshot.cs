@@ -37,6 +37,23 @@ namespace AiAttended.Migrations
                     b.ToTable("Meetings");
                 });
 
+            modelBuilder.Entity("AiAttended.Models.MeetingDetails", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("MeetingId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MeetingDetails");
+                });
+
             modelBuilder.Entity("AiAttended.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -45,9 +62,6 @@ namespace AiAttended.Migrations
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp without time zone");
-
-                    b.Property<Guid?>("MeetingId")
-                        .HasColumnType("uuid");
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
@@ -66,21 +80,37 @@ namespace AiAttended.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MeetingId");
-
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("AiAttended.Models.User", b =>
+            modelBuilder.Entity("MeetingUser", b =>
                 {
-                    b.HasOne("AiAttended.Models.Meeting", null)
-                        .WithMany("Attendees")
-                        .HasForeignKey("MeetingId");
+                    b.Property<Guid>("MeetingsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UsersId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("MeetingsId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("MeetingUser");
                 });
 
-            modelBuilder.Entity("AiAttended.Models.Meeting", b =>
+            modelBuilder.Entity("MeetingUser", b =>
                 {
-                    b.Navigation("Attendees");
+                    b.HasOne("AiAttended.Models.Meeting", null)
+                        .WithMany()
+                        .HasForeignKey("MeetingsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AiAttended.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

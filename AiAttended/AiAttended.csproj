@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <DockerComposeProjectPath>../docker-compose.dcproj</DockerComposeProjectPath>
+    <UserSecretsId>b5f0af41-7d39-4ccb-bb1f-008bd6b8e41d</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -33,5 +35,10 @@
     <Compile Update="Migrations\20210719200500_Second-Migration.Designer.cs">
       <DependentUpon>20210719200500_Second-Migration.cs</DependentUpon>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Dockerfile">
+      <DependentUpon>Dockerfile</DependentUpon>
+    </None>
   </ItemGroup>
 </Project>

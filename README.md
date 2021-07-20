@@ -10,6 +10,8 @@
 4. Meeting History
 5. Model Training
  
+Check out the project [here](https://aiattended.herokuapp.com)
+
 ## How it works
 
 #### 1. Add Person

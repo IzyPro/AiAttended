@@ -70,7 +70,7 @@ namespace AiAttended.Services
                     string fileName = Path.GetFileNameWithoutExtension(similarImage.FileName);
                     string extension = Path.GetExtension(similarImage.FileName);
                     fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
-                    string path = Path.Combine(wwwRootPath + "/img/", fileName);
+                    string path = Path.Combine(wwwRootPath, $"img/{fileName}");
                     using (var fileStream = new FileStream(path, FileMode.Create))
                     {
                         await similarImage.CopyToAsync(fileStream);
@@ -312,8 +312,8 @@ namespace AiAttended.Services
                     string wwwRootPath = _hostEnvironment.WebRootPath;
                     string fileName = Path.GetFileNameWithoutExtension(similarImage.FileName);
                     string extension = Path.GetExtension(similarImage.FileName);
-                    fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
-                    string path = Path.Combine(wwwRootPath + "/img/", fileName);
+                    fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension; ;
+                    string path = Path.Combine(wwwRootPath, $"img/{fileName}");
                     using (var fileStream = new FileStream(path, FileMode.Create))
                     {
                         await similarImage.CopyToAsync(fileStream);

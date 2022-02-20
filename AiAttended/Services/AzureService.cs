@@ -34,7 +34,7 @@ namespace AiAttended.Services
             try
             {
                 //Check if User Already exists
-                var existingUser = _context.Users.Where(x => x.Name == model.Name).FirstOrDefault();
+                var existingUser = _context.Users.Where(x => x.Name.ToLower() == model.Name.ToLower()).FirstOrDefault();
                 if (existingUser != null)
                 {
                     return new ResponseManager
@@ -239,7 +239,7 @@ namespace AiAttended.Services
                     DateTime = DateTime.Now,
                 };
 
-                _context.Meetings.Add(meeting);
+                var meetingDetails = new List<MeetingDetails>();
 
                 foreach (var identifyResult in identifyResults)
                 {
@@ -253,17 +253,19 @@ namespace AiAttended.Services
                             var user = _context.Users.Where(x => x.Name == person.Name).FirstOrDefault();
                             identifiedPersons.Add(user);
 
-                            var meetingDetails = new MeetingDetails
+                            var details = new MeetingDetails
                             {
                                 Id = Guid.NewGuid(),
                                 MeetingId = meetingId,
                                 UserId = user.Id,
                             };
-                            _context.MeetingDetails.Add(meetingDetails);
+                            meetingDetails.Add(details);
                         }
                     }
                 }
 
+                _context.Meetings.Add(meeting);
+                await _context.MeetingDetails.AddRangeAsync(meetingDetails);
                 var result = await _context.SaveChangesAsync();
 
                 if (result > 0)

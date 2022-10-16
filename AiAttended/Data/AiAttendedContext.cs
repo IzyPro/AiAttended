@@ -11,6 +11,7 @@ namespace AiAttended.Data
 
         public DbSet<User> Users { get; set; }
         public DbSet<Meeting> Meetings { get; set; }
+        public DbSet<Course> Courses { get; set; }
         public DbSet<MeetingDetails> MeetingDetails { get; set; }
     }
 }

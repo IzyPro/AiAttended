@@ -21,7 +21,7 @@ namespace AiAttended.Services
             {
                 var response = new ResponseManager();
                 var people = await _context.Users.ToListAsync();
-                var meeting = await _context.Meetings.Where(x => x.DateTime.Date == dateTime.Date).Where(x => x.Name == name).FirstOrDefaultAsync();
+                var meeting = await _context.Meetings.FirstOrDefaultAsync(x => x.DateTime.Date == dateTime.Date && x.Name == name);
 
                 if (people == null)
                 {
@@ -43,11 +43,11 @@ namespace AiAttended.Services
                     return new Tuple<ResponseManager, MeetingViewModel>(response, null);
                 }
 
-                var meetingDetails = await _context.MeetingDetails.Where(x => x.MeetingId == meeting.Id).ToListAsync();
+                var meetingDetails = _context.MeetingDetails.Where(x => x.MeetingId == meeting.Id);
 
                 foreach (var person in people)
                 {
-                    if (meetingDetails.Where(x => x.UserId == person.Id).FirstOrDefault() != null)
+                    if (meetingDetails.FirstOrDefault(x => x.UserId == person.Id) != null)
                     {
                         person.wasPresent = true;
                     }

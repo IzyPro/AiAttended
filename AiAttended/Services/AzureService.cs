@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.CognitiveServices.Vision.Face;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace AiAttended.Services
@@ -34,7 +35,7 @@ namespace AiAttended.Services
             try
             {
                 //Check if User Already exists
-                var existingUser = _context.Users.Where(x => x.Name.ToLower() == model.Name.ToLower()).FirstOrDefault();
+                var existingUser = _context.Users.FirstOrDefault(x => x.Name.ToLower() == model.Name.ToLower());
                 if (existingUser != null)
                 {
                     return new ResponseManager
@@ -87,7 +88,6 @@ namespace AiAttended.Services
                     Name = model.Name,
                     Created = DateTime.Now,
                     UserGroupId = personGroupId,
-                    PersistedFaceIDs = null,
                     UserData = $"AiAttended: {model.Name}-{person.PersonId}",
                 };
 
@@ -95,22 +95,11 @@ namespace AiAttended.Services
                 _context.Users.Add(user);
                 var result = await _context.SaveChangesAsync();
 
-                if (result > 0)
+                return new ResponseManager
                 {
-                    return new ResponseManager
-                    {
-                        isSuccess = true,
-                        Message = "User Added Successfully",
-                    };
-                }
-                else
-                {
-                    return new ResponseManager
-                    {
-                        isSuccess = false,
-                        Message = "Unable to save user to Database. Try Again",
-                    };
-                }
+                    isSuccess = result > 0,
+                    Message = result > 0 ? "User Added Successfully" : "Unable to save user to Database. Try Again",
+                };
             }
             catch (Exception ex)
             {
@@ -250,7 +239,7 @@ namespace AiAttended.Services
 
                         if (confidence >= 0.5)
                         {
-                            var user = _context.Users.Where(x => x.Name == person.Name).FirstOrDefault();
+                            var user = _context.Users.FirstOrDefault(x => x.Name == person.Name);
                             identifiedPersons.Add(user);
 
                             var details = new MeetingDetails
@@ -268,24 +257,12 @@ namespace AiAttended.Services
                 await _context.MeetingDetails.AddRangeAsync(meetingDetails);
                 var result = await _context.SaveChangesAsync();
 
-                if (result > 0)
+                response = new ResponseManager
                 {
-                    response = new ResponseManager
-                    {
-                        isSuccess = true,
-                        Message = "Meeting saved Successfully",
-                    };
-                    return new Tuple<ResponseManager, List<User>>(response, identifiedPersons);
-                }
-                else
-                {
-                    response = new ResponseManager
-                    {
-                        isSuccess = false,
-                        Message = "Unable to generate attendance. Try again",
-                    };
-                    return new Tuple<ResponseManager, List<User>>(response, null);
-                }
+                    isSuccess = result > 0,
+                    Message = result > 0 ? "Meeting saved Successfully" : "Unable to generate attendance. Try again",
+                };
+                return new Tuple<ResponseManager, List<User>>(response, identifiedPersons);
             }
             catch(Exception ex)
             {

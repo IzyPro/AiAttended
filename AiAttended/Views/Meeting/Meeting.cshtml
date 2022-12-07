@@ -35,11 +35,12 @@
                         {
                             foreach (var entry in meeting.Users)
                             {
+                                var status = entry?.wasPresent ?? false ? "True" : "False";
                                 <tr>
                                     <td class="col-md-2">@string.Join("", entry.Id.ToString().Take(10))...</td>
                                     <td class="col-md-3">@meeting.DateTime.Date.ToShortDateString()</td>
                                     <td class="col-md-5">@entry.Name</td>
-                                    <td class="col-md-2">@Convert.ToInt32(entry.wasPresent)</td>
+                                    <td class="col-md-2">@status</td>
                                 </tr>
                             }
                         }

@@ -3,6 +3,12 @@
     ViewData["Title"] = "Home";
 }
 <link href="~/css/Index.css" rel="stylesheet" type="text/css">
+    
+@*<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.8.1/css/bootstrap-select.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.8.1/js/bootstrap-select.js"></script>*@
+
 
 <div class="container jumbo">
     <div class="text-center row">
@@ -24,12 +30,17 @@
         <div class="col-md-4 text-left mb-3 border-bottom pb-5">
             <p class="text-danger">@TempData["AddPersonError"]</p>
             <p class="text-success">@TempData["AddPersonSuccess"]</p>
-            <h4>Add Person</h4>
-            <p>Add a person with 2+ photos of different angles as a member of a class.</p>
+            <h4>Add Student</h4>
+            <p>Add a student with 2+ photos of different angles as a member of a class.</p>
             <div class="form-label-group">
                 <form asp-action="AddPerson" method="post" id="addPerson" enctype="multipart/form-data">
                     <input class="form-control col-md-10 mb-1" asp-for="Name" type="text" name="Name" placeholder="Name" required />
                     <span asp-validation-for="Name" class="text-danger"></span>
+                    @*<select class="selectpicker" multiple data-live-search="true">
+                      <option>Mustard</option>
+                      <option>Ketchup</option>
+                      <option>Relish</option>
+                    </select>*@
                     <input class="mt-3 mb-3" accept="image/*" name="Images" asp-for="Images" placeholder="Add Photos" required multiple />
                     <span asp-validation-for="Images" class="text-danger"></span>
                     <button class="mt-3 btn-sm btn-block" type="submit" id="Btn" onclick="showLoader()">Add</button>
@@ -47,18 +58,18 @@
             </form>
         </div>
 
-        <div class="col-md-4 text-right mb-3  border-bottom pb-5">
+        <div class="col-md-4 text-right mb-3  border-bottom">
             <p class="text-danger">@TempData["IdentifyError"]</p>
             <p class="text-success">@TempData["IdentifySuccess"]</p>
-            <h4>Identify Faces</h4>
+            <h4>Record Attendance</h4>
             <p>Upload a group image(s) of all attendees to get the list of everyone in attendance.</p>
-            <div class="form-label-group text-right">
+            <div class="form-label-group">
                 <form asp-action="Identify" method="post" id="identifyPerson" enctype="multipart/form-data">
-                    <input class="form-control col-md-10 mb-1" asp-for="Name" type="text" name="Name" placeholder="Meeting Name" required />
+                    <input class="form-control col-md-10 mb-1" asp-for="Name" type="text" name="Name" placeholder="Course Name" required />
                     <span asp-validation-for="Name" class="text-danger"></span>
                     <input class="mt-3 mb-3" accept="image/*" asp-for="Images" name="Images" placeholder="Add Photos" required multiple />
                     <span asp-validation-for="Images" class="text-danger"></span>
-                    <button class="mt-3 btn-sm btn-block" type="submit" id="identifyBtn" onclick="showIdentifyLoader()">Identify</button>
+                    <button class="mt-3 btn-sm btn-block" type="submit" id="identifyBtn" onclick="showIdentifyLoader()">Record</button>
                 </form>
             </div>
         </div>
@@ -69,6 +80,7 @@
 @section Scripts{
 
     <script>
+        //$('#my-select').multiSelect()
         function showLoader() {
             var form = document.getElementById("addPerson");
             if (form.checkValidity()) {

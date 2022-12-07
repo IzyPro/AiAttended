@@ -67,19 +67,21 @@ namespace AiAttended.Services
                 // Add face to the person group person.
                 foreach (var similarImage in model.Images)
                 {
-                    string wwwRootPath = _hostEnvironment.WebRootPath;
-                    string fileName = Path.GetFileNameWithoutExtension(similarImage.FileName);
-                    string extension = Path.GetExtension(similarImage.FileName);
-                    fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
-                    string path = Path.Combine(wwwRootPath, $"img/{fileName}");
-                    using (var fileStream = new FileStream(path, FileMode.Create))
-                    {
-                        await similarImage.CopyToAsync(fileStream);
-                        using (Stream imageStream = File.OpenRead(path))
-                        {
-                            PersistedFace face = await faceClient.LargePersonGroupPerson.AddFaceFromStreamAsync(largePersonGroupId: personGroupId, personId: person.PersonId, image: imageStream);
-                        }
-                    }
+                    var imageStream = similarImage.OpenReadStream();
+                    PersistedFace face = await faceClient.LargePersonGroupPerson.AddFaceFromStreamAsync(largePersonGroupId: personGroupId, personId: person.PersonId, image: imageStream);
+                    //string wwwRootPath = _hostEnvironment.WebRootPath;
+                    //string fileName = Path.GetFileNameWithoutExtension(similarImage.FileName);
+                    //string extension = Path.GetExtension(similarImage.FileName);
+                    //fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
+                    //string path = Path.Combine(wwwRootPath, $"img{Path.DirectorySeparatorChar}{fileName}");
+                    //using (var fileStream = new FileStream(path, FileMode.Create))
+                    //{
+                    //    await similarImage.CopyToAsync(fileStream);
+                    //    using (Stream imageStream = File.OpenRead(path))
+                    //    {
+                    //        PersistedFace face = await faceClient.LargePersonGroupPerson.AddFaceFromStreamAsync(largePersonGroupId: personGroupId, personId: person.PersonId, image: imageStream);
+                    //    }
+                    //}
                 }
 
                 var user = new User
@@ -288,25 +290,34 @@ namespace AiAttended.Services
                 // We use detection model 3 because we are not retrieving attributes.
                 foreach (var similarImage in image)
                 {
-                    string wwwRootPath = _hostEnvironment.WebRootPath;
-                    string fileName = Path.GetFileNameWithoutExtension(similarImage.FileName);
-                    string extension = Path.GetExtension(similarImage.FileName);
-                    fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension; ;
-                    string path = Path.Combine(wwwRootPath, $"img/{fileName}");
-                    using (var fileStream = new FileStream(path, FileMode.Create))
+                    var imageStream = similarImage.OpenReadStream();
+                    detectedFaces = await faceClient.Face.DetectWithStreamAsync(imageStream, recognitionModel: recognition_model, detectionModel: DetectionModel.Detection03);
+                    if (detectedFaces.Count < 1)
+                        return null;
+                    foreach (var face in detectedFaces)
                     {
-                        await similarImage.CopyToAsync(fileStream);
-                        using (Stream imageStream = File.OpenRead(path))
-                        {
-                            detectedFaces = await faceClient.Face.DetectWithStreamAsync(imageStream, recognitionModel: recognition_model, detectionModel: DetectionModel.Detection03);
-                            if (detectedFaces.Count < 1)
-                                return null;
-                            foreach (var face in detectedFaces)
-                            {
-                                allDetectedFaces.Add(face);
-                            }
-                        }
+                        allDetectedFaces.Add(face);
                     }
+
+                    //string wwwRootPath = _hostEnvironment.WebRootPath;
+                    //string fileName = Path.GetFileNameWithoutExtension(similarImage.FileName);
+                    //string extension = Path.GetExtension(similarImage.FileName);
+                    //fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension; ;
+                    //string path = Path.Combine(wwwRootPath, $"img{Path.DirectorySeparatorChar}{fileName}");
+                    //using (var fileStream = new FileStream(path, FileMode.Create))
+                    //{
+                    //    await similarImage.CopyToAsync(fileStream);
+                    //    using (Stream imageStream = File.OpenRead(path))
+                    //    {
+                    //        detectedFaces = await faceClient.Face.DetectWithStreamAsync(imageStream, recognitionModel: recognition_model, detectionModel: DetectionModel.Detection03);
+                    //        if (detectedFaces.Count < 1)
+                    //            return null;
+                    //        foreach (var face in detectedFaces)
+                    //        {
+                    //            allDetectedFaces.Add(face);
+                    //        }
+                    //    }
+                    //}
                 }
                 if (allDetectedFaces.Count < 1)
                     return null;

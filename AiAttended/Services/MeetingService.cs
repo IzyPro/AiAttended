@@ -21,7 +21,7 @@ namespace AiAttended.Services
             {
                 var response = new ResponseManager();
                 var people = await _context.Users.ToListAsync();
-                var meeting = await _context.Meetings.FirstOrDefaultAsync(x => x.DateTime.Date == dateTime.Date && x.Name == name);
+                var meeting = await _context.Meetings.FirstOrDefaultAsync(x => x.DateTime.Date == dateTime.Date && x.Name.ToLower() == name.ToLower());
 
                 if (people == null)
                 {

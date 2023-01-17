@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.CognitiveServices.Vision.Face;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace AiAttended.Services
@@ -34,7 +35,7 @@ namespace AiAttended.Services
             try
             {
                 //Check if User Already exists
-                var existingUser = _context.Users.Where(x => x.Name == model.Name).FirstOrDefault();
+                var existingUser = _context.Users.FirstOrDefault(x => x.Name.ToLower() == model.Name.ToLower());
                 if (existingUser != null)
                 {
                     return new ResponseManager
@@ -66,19 +67,21 @@ namespace AiAttended.Services
                 // Add face to the person group person.
                 foreach (var similarImage in model.Images)
                 {
-                    string wwwRootPath = _hostEnvironment.WebRootPath;
-                    string fileName = Path.GetFileNameWithoutExtension(similarImage.FileName);
-                    string extension = Path.GetExtension(similarImage.FileName);
-                    fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
-                    string path = Path.Combine(wwwRootPath, $"img/{fileName}");
-                    using (var fileStream = new FileStream(path, FileMode.Create))
-                    {
-                        await similarImage.CopyToAsync(fileStream);
-                        using (Stream imageStream = File.OpenRead(path))
-                        {
-                            PersistedFace face = await faceClient.LargePersonGroupPerson.AddFaceFromStreamAsync(largePersonGroupId: personGroupId, personId: person.PersonId, image: imageStream);
-                        }
-                    }
+                    var imageStream = similarImage.OpenReadStream();
+                    PersistedFace face = await faceClient.LargePersonGroupPerson.AddFaceFromStreamAsync(largePersonGroupId: personGroupId, personId: person.PersonId, image: imageStream);
+                    //string wwwRootPath = _hostEnvironment.WebRootPath;
+                    //string fileName = Path.GetFileNameWithoutExtension(similarImage.FileName);
+                    //string extension = Path.GetExtension(similarImage.FileName);
+                    //fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
+                    //string path = Path.Combine(wwwRootPath, $"img{Path.DirectorySeparatorChar}{fileName}");
+                    //using (var fileStream = new FileStream(path, FileMode.Create))
+                    //{
+                    //    await similarImage.CopyToAsync(fileStream);
+                    //    using (Stream imageStream = File.OpenRead(path))
+                    //    {
+                    //        PersistedFace face = await faceClient.LargePersonGroupPerson.AddFaceFromStreamAsync(largePersonGroupId: personGroupId, personId: person.PersonId, image: imageStream);
+                    //    }
+                    //}
                 }
 
                 var user = new User
@@ -87,7 +90,6 @@ namespace AiAttended.Services
                     Name = model.Name,
                     Created = DateTime.Now,
                     UserGroupId = personGroupId,
-                    PersistedFaceIDs = null,
                     UserData = $"AiAttended: {model.Name}-{person.PersonId}",
                 };
 
@@ -95,22 +97,11 @@ namespace AiAttended.Services
                 _context.Users.Add(user);
                 var result = await _context.SaveChangesAsync();
 
-                if (result > 0)
+                return new ResponseManager
                 {
-                    return new ResponseManager
-                    {
-                        isSuccess = true,
-                        Message = "User Added Successfully",
-                    };
-                }
-                else
-                {
-                    return new ResponseManager
-                    {
-                        isSuccess = false,
-                        Message = "Unable to save user to Database. Try Again",
-                    };
-                }
+                    isSuccess = result > 0,
+                    Message = result > 0 ? "User Added Successfully" : "Unable to save user to Database. Try Again",
+                };
             }
             catch (Exception ex)
             {
@@ -239,7 +230,7 @@ namespace AiAttended.Services
                     DateTime = DateTime.Now,
                 };
 
-                _context.Meetings.Add(meeting);
+                var meetingDetails = new List<MeetingDetails>();
 
                 foreach (var identifyResult in identifyResults)
                 {
@@ -250,40 +241,30 @@ namespace AiAttended.Services
 
                         if (confidence >= 0.5)
                         {
-                            var user = _context.Users.Where(x => x.Name == person.Name).FirstOrDefault();
+                            var user = _context.Users.FirstOrDefault(x => x.Name == person.Name);
                             identifiedPersons.Add(user);
 
-                            var meetingDetails = new MeetingDetails
+                            var details = new MeetingDetails
                             {
                                 Id = Guid.NewGuid(),
                                 MeetingId = meetingId,
                                 UserId = user.Id,
                             };
-                            _context.MeetingDetails.Add(meetingDetails);
+                            meetingDetails.Add(details);
                         }
                     }
                 }
 
+                _context.Meetings.Add(meeting);
+                await _context.MeetingDetails.AddRangeAsync(meetingDetails);
                 var result = await _context.SaveChangesAsync();
 
-                if (result > 0)
+                response = new ResponseManager
                 {
-                    response = new ResponseManager
-                    {
-                        isSuccess = true,
-                        Message = "Meeting saved Successfully",
-                    };
-                    return new Tuple<ResponseManager, List<User>>(response, identifiedPersons);
-                }
-                else
-                {
-                    response = new ResponseManager
-                    {
-                        isSuccess = false,
-                        Message = "Unable to generate attendance. Try again",
-                    };
-                    return new Tuple<ResponseManager, List<User>>(response, null);
-                }
+                    isSuccess = result > 0,
+                    Message = result > 0 ? "Meeting saved Successfully" : "Unable to generate attendance. Try again",
+                };
+                return new Tuple<ResponseManager, List<User>>(response, identifiedPersons);
             }
             catch(Exception ex)
             {
@@ -309,25 +290,34 @@ namespace AiAttended.Services
                 // We use detection model 3 because we are not retrieving attributes.
                 foreach (var similarImage in image)
                 {
-                    string wwwRootPath = _hostEnvironment.WebRootPath;
-                    string fileName = Path.GetFileNameWithoutExtension(similarImage.FileName);
-                    string extension = Path.GetExtension(similarImage.FileName);
-                    fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension; ;
-                    string path = Path.Combine(wwwRootPath, $"img/{fileName}");
-                    using (var fileStream = new FileStream(path, FileMode.Create))
+                    var imageStream = similarImage.OpenReadStream();
+                    detectedFaces = await faceClient.Face.DetectWithStreamAsync(imageStream, recognitionModel: recognition_model, detectionModel: DetectionModel.Detection03);
+                    if (detectedFaces.Count < 1)
+                        return null;
+                    foreach (var face in detectedFaces)
                     {
-                        await similarImage.CopyToAsync(fileStream);
-                        using (Stream imageStream = File.OpenRead(path))
-                        {
-                            detectedFaces = await faceClient.Face.DetectWithStreamAsync(imageStream, recognitionModel: recognition_model, detectionModel: DetectionModel.Detection03);
-                            if (detectedFaces.Count < 1)
-                                return null;
-                            foreach (var face in detectedFaces)
-                            {
-                                allDetectedFaces.Add(face);
-                            }
-                        }
+                        allDetectedFaces.Add(face);
                     }
+
+                    //string wwwRootPath = _hostEnvironment.WebRootPath;
+                    //string fileName = Path.GetFileNameWithoutExtension(similarImage.FileName);
+                    //string extension = Path.GetExtension(similarImage.FileName);
+                    //fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension; ;
+                    //string path = Path.Combine(wwwRootPath, $"img{Path.DirectorySeparatorChar}{fileName}");
+                    //using (var fileStream = new FileStream(path, FileMode.Create))
+                    //{
+                    //    await similarImage.CopyToAsync(fileStream);
+                    //    using (Stream imageStream = File.OpenRead(path))
+                    //    {
+                    //        detectedFaces = await faceClient.Face.DetectWithStreamAsync(imageStream, recognitionModel: recognition_model, detectionModel: DetectionModel.Detection03);
+                    //        if (detectedFaces.Count < 1)
+                    //            return null;
+                    //        foreach (var face in detectedFaces)
+                    //        {
+                    //            allDetectedFaces.Add(face);
+                    //        }
+                    //    }
+                    //}
                 }
                 if (allDetectedFaces.Count < 1)
                     return null;

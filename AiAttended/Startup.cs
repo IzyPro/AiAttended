@@ -30,8 +30,10 @@ namespace AiAttended
 
 
             //ENTITY FRAMEWORK
-            services.AddDbContext<AiAttendedContext>(option => option.UseNpgsql
-            (Configuration.GetConnectionString("AiAttendedConnection")));
+            services.AddDbContext<AiAttendedContext>(option => option.UseSqlServer
+            (Configuration.GetConnectionString("DefaultConnection")));
+            //services.AddDbContext<AiAttendedContext>(option => option.UseNpgsql
+            //(Configuration.GetConnectionString("AiAttendedConnection")));
 
             services.AddScoped<IAzureService, AzureService>();
             services.AddScoped<IMeetingService, MeetingService>();
